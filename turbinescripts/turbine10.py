@@ -36,7 +36,6 @@ helihoist_geo_hammerhead = pd.read_csv(hammerhead[1], delimiter = ',')
 sbitroot_hammerhead = pd.read_csv(hammerhead[2], delimiter = ',')
 sbitip_hammerhead = pd.read_csv(hammerhead[3], delimiter = ',')
 data.append(helihoist_tele_hammerhead) , data.append(helihoist_geo_hammerhead), data.append(sbitroot_hammerhead)  ,data.append(sbitip_hammerhead)
-
 helihoist_sbi1 = pd.read_csv(sbi1[0], delimiter= ',')
 sbiroot_sbi1 = pd.read_csv(sbi1[1], delimiter = ',')
 sbitip_sbi1 = pd.read_csv(sbi1[2], delimiter = ',')
@@ -45,10 +44,9 @@ data.append(helihoist_sbi1) ,data.append(sbiroot_sbi1)
 
 wmb= pd.read_csv('environment/environment/waves/wmb-sued/wmb-sued_2019-10-23.csv', delimiter = ' ')
 lidar=pd.read_csv('environment/environment/wind/lidar/lidar_2019-10-23.csv', delimiter = ' ')
-
 data.append(wmb), data.append(lidar)
 
-wmb.columns = 'epoch', 'Tp', 'Dirp', 'Sprp', 'Tz', 'Hm0', 'TI', 'T1', 'Tc', 'Tdw2', 'Tdw1', 'Tpc', 'nu', 'eps', 'QP', 'Ss', 'TRef', 'TSea', 'Bat', 'Percentage', 'Hmax', 'Tmax', 'H(1/10)', 'T(1/10)', 'H(1/3)', 'T(1/3)', 'Hav', 'Tav', 'Eps', '#Waves'
+wmb.columns = ('epoch', 'Tp', 'Dirp', 'Sprp', 'Tz', 'Hm0', 'TI', 'T1', 'Tc', 'Tdw2', 'Tdw1', 'Tpc', 'nu', 'eps', 'QP', 'Ss', 'TRef', 'TSea', 'Bat', 'Percentage', 'Hmax', 'Tmax', 'H(1/10)', 'T(1/10)', 'H(1/3)', 'T(1/3)', 'Hav', 'Tav', 'Eps', '#Waves')
 lidar.columns = ( 'epoch', 'wind_speed_0', 'wind_dir_0', 'wind_dir_0_corr', 'height_0', 'wind_speed_1', 'wind_dir_1', 'wind_dir_1_corr', 'height_1', 'wind_speed_2', 'wind_dir_2', 'wind_dir_2_corr', 'height_2', 'wind_speed_3', 'wind_dir_3', 'wind_dir_3_corr', 'height_3', 'wind_speed_4', 'wind_dir_4', 'wind_dir_4_corr', 'height_4', 'wind_speed_5', 'wind_dir_5', 'wind_dir_5_corr', 'height_5', 'wind_speed_6', 'wind_dir_6', 'wind_dir_6_corr', 'height_6', 'wind_speed_7', 'wind_dir_7', 'wind_dir_7_corr', 'height_7', 'wind_speed_8', 'wind_dir_8', 'wind_dir_8_corr', 'height_8', 'wind_speed_9', 'wind_dir_9', 'wind_dir_9_corr', 'height_9', 'wind_speed_10', 'wind_dir_10', 'wind_dir_10_corr', 'height_10', 'heading')
 UTC = []
 for k in range(len(wmb)):
@@ -56,9 +54,8 @@ for k in range(len(wmb)):
 wmb['epoch'] = UTC
 wmb.index = wmb['epoch']
 del wmb['epoch']
-wmb = wmb.resample('1S', label='left').mean().pad() / 1800
+wmb = wmb.resample('3S', label='left').mean().pad() / 1800
 wmb = wmb
-
 
 UTC = []
 for k in range(len(lidar)):
@@ -66,8 +63,10 @@ for k in range(len(lidar)):
 lidar['epoch'] = UTC
 lidar.index = lidar['epoch']
 del lidar['epoch']
-lidar = lidar.resample('1S', label='left').mean().pad()
+print(lidar)
+lidar = lidar.resample('3S', label='left').mean().pad()
 lidar = lidar
+print(lidar)
 
 #generating timestamps for every dataframe
 counter = 0
@@ -78,7 +77,7 @@ for df in data:
     df['epoch'] = UTC
     df.index = df['epoch']
     del df['epoch']
-    df = df.resample('1S', label = 'left').mean().pad()
+    df = df.resample('3S', label = 'left').mean().pad()
     data[counter] = df
     counter = counter+1
 
@@ -99,7 +98,7 @@ plt.xlabel('time')
 plt.xticks(rotation= 90)
 plt.show()
 '''
-
+'''
 # generating hammerhead file
 #11:48:51   19:42:22
 
@@ -119,3 +118,54 @@ for i in range(4,7):
 transition_wmb =wmb['2019-10-23 19:55:12': '2019-10-23 20:29:21']
 result =pd.concat([data[4],data[5],data[6], transition_wmb], axis=1 )
 result.to_csv('Results_preprocessing/turbine10/sbi1_turbine10.csv')
+'''
+
+'''
+files to extract
+23.10.2019	11:32:59	23.10.2019	19:42:22
+'''
+print(lidar.columns)
+print(wmb.columns)
+data[1] = data[1]['2019-10-23 13:33:00': '2019-10-23 21:42:15']
+transition_wmb =wmb['2019-10-23 13:33:00': '2019-10-23 21:42:15']
+result = pd.concat([data[1],transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/hammerhead_turbine10.csv')

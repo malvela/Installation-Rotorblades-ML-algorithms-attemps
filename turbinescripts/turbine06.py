@@ -182,6 +182,7 @@ tnhb1
 tnhb2	
 00:30:45	00:42:54
 
+
 '''
 
 #for boje data resampling and then adding to sampleframes
@@ -190,10 +191,9 @@ UTC = []
 for k in range(len(wmb)):
     UTC.append(pd.Timestamp.fromtimestamp(wmb.iloc[k, 0]))
 wmb['epoch'] = UTC
-
 wmb.index = wmb['epoch']
 wmb.pop('epoch')
-wmb = wmb.resample('1S', label = 'right', closed = 'right').mean().pad() / 1800
+wmb = wmb.resample('3S', label = 'left').mean().pad() / 1800
 
 #same with lidar data
 UTC = []
@@ -202,7 +202,7 @@ for k in range(len(lidar)):
 lidar['epoch'] = UTC
 lidar.index = lidar['epoch']
 del lidar['epoch']
-lidar = lidar.resample('1S', label='left').mean().pad()
+lidar = lidar.resample('3S', label='left').mean().pad()
 lidar = lidar
 
 
@@ -221,11 +221,11 @@ for df in data:
     df['epoch'] = UTC
     df.index = df['epoch']
     del df['epoch']
-    df = df.resample('1S', label = 'left').mean().pad()
+    df = df.resample('3S', label = 'left').mean().pad()
     data[counter] = df
     counter = counter+1
 
-
+'''
 # generating hammerhead file
 for i in range(4):
     data[i] = data[i]['2019-09-22 03:16:30': '2019-09-22 12:05:47']
@@ -269,11 +269,295 @@ transition_wmb =wmb['2019-09-23 00:30:45': '2019-09-23 00:42:54']
 transition_lidar = lidar['2019-09-23 00:30:45': '2019-09-23 00:42:54']
 result = pd.concat([data[14], data[15], data[16], data[17],transition_lidar, transition_wmb], axis=1)
 result.to_csv('Results_preprocessing/turbine06/tnhb2_turbine6.csv')
+'''
 
 '''
+#generating correlation matrix
 sbi1_turbine6 = pd.read_csv('Results_preprocessing/turbine06/sbi1_turbine6.csv', delimiter = ',')
 corrMatrix = sbi1_turbine6.corr() #coolwarm
 sn.heatmap(corrMatrix, annot=False)
 plt.show()
 
 '''
+
+
+'''
+files to extract
+22.09.2019	03:14:43	22.09.2019	12:05:47
+22.09.2019	12:41:45	22.09.2019	22:11:22
+23.09.2019	00:30:45	23.09.2019	00:42:54
+'''
+print(data[1].index[0])
+print(data[1].index[-1])
+data[1] = data[1]['2019-09-22 05:14:43': '2019-09-22 14:05:42']
+transition_wmb =wmb['2019-09-22 05:14:43': '2019-09-22 14:05:42']
+transition_lidar = lidar['2019-09-22 05:14:43': '2019-09-22 14:05:42']
+result = pd.concat([data[1], transition_lidar, transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['wind_speed_0']
+del result['wind_dir_0']
+del result['wind_dir_0_corr']
+del result['height_0']
+del result['wind_speed_1']
+del result['wind_dir_1']
+del result['wind_dir_1_corr']
+del result['height_1']
+del result['wind_speed_2']
+del result['wind_dir_2']
+del result['wind_dir_2_corr']
+del result['height_2']
+del result['wind_speed_3']
+del result['wind_dir_3']
+del result['wind_dir_3_corr']
+del result['height_3']
+del result['wind_speed_4']
+del result['wind_dir_4']
+del result['wind_dir_4_corr']
+del result['height_4']
+del result['wind_speed_5']
+del result['wind_dir_5']
+del result['wind_dir_5_corr']
+del result['height_5']
+del result['wind_speed_6']
+del result['wind_dir_6']
+del result['wind_dir_6_corr']
+del result['height_6']
+del result['wind_speed_7']
+del result['wind_dir_7']
+del result['wind_dir_7_corr']
+del result['height_7']
+del result['wind_speed_8']
+del result['wind_dir_8']
+del result['wind_dir_8_corr']
+del result['height_8']
+del result['wind_speed_9']
+del result['wind_dir_9']
+del result['wind_dir_9_corr']
+del result['height_9']
+del result['wind_speed_10']
+del result['wind_dir_10']
+del result['wind_dir_10_corr']
+del result['height_10']
+del result['heading']
+del result['Tp']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/hammerhead_turbine06.csv')
+print(data[11].index[0])
+print(data[11].index[-1])
+data[11] = data[11]['2019-09-22 14:41:45': '2019-09-22 23:30:03']
+transition_wmb =wmb['2019-09-22 14:41:45': '2019-09-22 23:30:03']
+transition_lidar = lidar['2019-09-22 14:41:45': '2019-09-22 23:30:03']
+result = pd.concat([data[11], transition_lidar, transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['wind_speed_0']
+del result['wind_dir_0']
+del result['wind_dir_0_corr']
+del result['height_0']
+del result['wind_speed_1']
+del result['wind_dir_1']
+del result['wind_dir_1_corr']
+del result['height_1']
+del result['wind_speed_2']
+del result['wind_dir_2']
+del result['wind_dir_2_corr']
+del result['height_2']
+del result['wind_speed_3']
+del result['wind_dir_3']
+del result['wind_dir_3_corr']
+del result['height_3']
+del result['wind_speed_4']
+del result['wind_dir_4']
+del result['wind_dir_4_corr']
+del result['height_4']
+del result['wind_speed_5']
+del result['wind_dir_5']
+del result['wind_dir_5_corr']
+del result['height_5']
+del result['wind_speed_6']
+del result['wind_dir_6']
+del result['wind_dir_6_corr']
+del result['height_6']
+del result['wind_speed_7']
+del result['wind_dir_7']
+del result['wind_dir_7_corr']
+del result['height_7']
+del result['wind_speed_8']
+del result['wind_dir_8']
+del result['wind_dir_8_corr']
+del result['height_8']
+del result['wind_speed_9']
+del result['wind_dir_9']
+del result['wind_dir_9_corr']
+del result['height_9']
+del result['wind_speed_10']
+del result['wind_dir_10']
+del result['wind_dir_10_corr']
+del result['height_10']
+del result['heading']
+del result['Tp']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/tnhb1_turbine06.csv')
+print(data[15].index[0])
+print(data[15].index[-1])
+data[15] = data[15]['2019-09-23 02:30:46': '2019-09-23 00:42:47']
+transition_wmb =wmb['2019-09-23 02:30:46': '2019-09-23 00:42:47']
+transition_lidar = lidar['2019-09-23 02:30:46': '2019-09-23 00:42:47']
+result = pd.concat([data[15], transition_lidar, transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['wind_speed_0']
+del result['wind_dir_0']
+del result['wind_dir_0_corr']
+del result['height_0']
+del result['wind_speed_1']
+del result['wind_dir_1']
+del result['wind_dir_1_corr']
+del result['height_1']
+del result['wind_speed_2']
+del result['wind_dir_2']
+del result['wind_dir_2_corr']
+del result['height_2']
+del result['wind_dir_3']
+del result['height_3']
+del result['wind_speed_4']
+del result['wind_dir_4']
+del result['wind_dir_4_corr']
+del result['height_4']
+del result['wind_speed_5']
+del result['wind_dir_5']
+del result['wind_dir_5_corr']
+del result['height_5']
+del result['wind_speed_6']
+del result['wind_dir_6']
+del result['wind_dir_6_corr']
+del result['height_6']
+del result['wind_speed_7']
+del result['wind_dir_7']
+del result['wind_dir_7_corr']
+del result['height_7']
+del result['wind_speed_8']
+del result['wind_dir_8']
+del result['wind_dir_8_corr']
+del result['height_8']
+del result['wind_speed_9']
+del result['wind_dir_9']
+del result['wind_dir_9_corr']
+del result['height_9']
+del result['wind_speed_10']
+del result['wind_dir_10']
+del result['wind_dir_10_corr']
+del result['height_10']
+del result['heading']
+del result['Tp']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/tnhb2_turbine06.csv')

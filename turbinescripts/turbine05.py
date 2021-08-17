@@ -43,11 +43,11 @@ keine winddaten
 
 '''
 #loading data and filling it into an array of all dataframes
-hammerhead = sorted(glob('Daten/hammerhead/hammerhead/turbine-06**.csv'))
-sbi1 = sorted(glob('Daten/sbi1/sbi1/turbine-06**.csv'))
-sbi2 = sorted(glob('Daten/sbi2/sbi2/turbine-06**.csv'))
-tnhb1 = sorted(glob('Daten/tnhb1/tnhb1/turbine-06**.csv'))
-tnhb2 = sorted(glob('Daten/tnhb2/tnhb2/turbine-06**.csv'))
+hammerhead = sorted(glob('Daten/hammerhead/hammerhead/turbine-05**.csv'))
+sbi1 = sorted(glob('Daten/sbi1/sbi1/turbine-05**.csv'))
+sbi2 = sorted(glob('Daten/sbi2/sbi2/turbine-05*.csv'))
+tnhb1 = sorted(glob('Daten/tnhb1/tnhb1/turbine-05**.csv'))
+tnhb2 = sorted(glob('Daten/tnhb2/tnhb2/turbine-05**.csv'))
 
 
 data = []
@@ -117,8 +117,11 @@ for k in range(len(wmb)):
 wmb['epoch'] = UTC
 wmb.index = wmb['epoch']
 del wmb['epoch']
-#wmb = wmb.resample('1S', label='left').mean().pad() / 1800
+wmb = wmb.resample('3S', label='left').mean().pad() / 1800
 wmb = wmb
+
+
+
 
 #generating timestamps for every dataframe
 counter = 0
@@ -129,7 +132,7 @@ for df in data:
     df['epoch'] = UTC
     df.index = df['epoch']
     del df['epoch']
-    df = df.resample('1S', label = 'left').mean().pad()
+    df = df.resample('3S', label = 'left').mean().pad()
     data[counter] = df
     counter = counter+1
 
@@ -142,6 +145,7 @@ plt.ylabel('number of waves')
 plt.xlabel('time')
 plt.xticks(rotation= 90)
 plt.show()
+'''
 '''
 # generating hammerhead file
 #17:29:33       02:34:11
@@ -192,4 +196,151 @@ transition_wmb = wmb['2019-09-20 13:00:55': '2019-09-20 16:11:16']
 
 result = pd.concat([data[14], data[15], data[16], data[17], transition_wmb], axis=1)
 result.to_csv('Results_preprocessing/turbine05/tnhb2_turbine5.csv')
+'''
 
+
+'''
+files to extract
+10.09.2019	16:04:47	20.09.2019	02:53:43
+20.09.2019	07:42:54	20.09.2019	12:01:11
+20.09.2019	12:51:37	20.09.2019	16:14:47
+
+'''
+print(data[1].index[0])
+print(data[1].index[-1])
+data[1] = data[1]['2019-09-10 18:04:48': '2019-09-20 04:53:39']
+transition_wmb =wmb['2019-09-10 18:04:48': '2019-09-20 04:53:39']
+result = pd.concat([data[1], transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['Tp']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/hammerhead_turbine05.csv')
+print(data[9].index[0])
+print(data[9].index[-1])
+data[9] = data[9]['2019-09-20 09:42:54': '2019-09-20 14:01:07']
+transition_wmb =wmb['2019-09-20 09:42:54': '2019-09-20 14:01:07']
+result = pd.concat([data[9], transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['Tp']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/tnhb1_turbine05.csv')
+print(data[13].index[0])
+print(data[13].index[-1])
+data[13] = data[13]['2019-09-20 14:51:37': '2019-09-20 18:14:40']
+transition_wmb =wmb['2019-09-20 14:51:37': '2019-09-20 18:14:40']
+result = pd.concat([data[13], transition_wmb], axis=1)
+del result['max_deflection_i']
+del result['ddt_max_deflection']
+del result['eccentricity']
+del result['ddt_axis_ratio']
+del result['ddt_eccentricity']
+del result['axis_angle_signed']
+del result['axis_angle_unsigned']
+del result['axis_azimuth']
+del result['ddt_axis_angle_signed']
+del result['ddt_axis_angle_unsigned']
+del result['p2p_angle_unsigned']
+del result['p2p_angle_signed']
+del result['p2p_azimuth']
+del result['ddt_p2p_azimuth_unwrapped']
+del result['ddt_p2p_azimuth']
+del result['ddt_p2p_angle_unsigned']
+del result['ddt_p2p_angle_signed']
+del result['Tp']
+del result['Sprp']
+del result['Tz']
+del result['Hm0']
+del result['TI']
+del result['T1']
+del result['Tc']
+del result['Tdw2']
+del result['Tdw1']
+del result['Tpc']
+del result['nu']
+del result['eps']
+del result['QP']
+del result['Ss']
+del result['TRef']
+del result['Bat']
+del result['Percentage']
+del result['H(1/10)']
+del result['T(1/10)']
+del result['H(1/3)']
+del result['T(1/3)']
+del result['Eps']
+del result['#Waves']
+result.to_csv('Results_preprocessing/geometry_files/tnhb2_turbine05.csv')
