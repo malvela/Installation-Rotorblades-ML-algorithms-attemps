@@ -6,13 +6,14 @@ from sklearn import datasets
 import time
 import numpy as np
 import pandas as pd
-
-
+import seaborn as sn
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
 #%%
 
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
-
+import pickle as pickle
 
 class ROLF():
     def __init__(self,p=1.5,lr_center = 0.1, lr_sigma = 0.1,initSigma = 2,strategy = ''):
@@ -122,18 +123,17 @@ class ROLF():
 
 # Run the examples on your own, replace make_circles with make_moons to change the example
 # If you get to much cluster or to less, play around with the initSigma
-
+'''
 X = pd.read_csv('hammerhead_reduced.csv', delimiter = ',')
-X = X.iloc[0:1000, :]
 X = X.fillna(0)
 del X['epoch']
-#X = PCA(n_components=2).fit_transform(X)
-Z,y = datasets.make_moons(n_samples=100000, noise=0.05)
-rolf = ROLF(p=1.5,lr_center = 0.01, lr_sigma = 0.01,initSigma = 10, strategy = 'max')
+#Z,y = datasets.make_moons(n_samples=100000, noise=0.05)
+rolf = ROLF(p=2,lr_center = 0.01, lr_sigma = 0.01,initSigma = 20, strategy = 'max')
 start_time = time.time()
 rolf.fit(X)
-print(type(rolf.center))
-print(type(rolf.lables))
+with open('rolf.pickle', 'wb') as handle:
+    pickle.dump(rolf, handle)
+    handle.close()
 print('')
 print("fitting ROLF took %s seconds" % (time.time() - start_time))
 print(len(rolf.center), 'neurons approximating', len(X), 'datapoints')
@@ -141,7 +141,7 @@ print(len(np.unique(rolf.lables)), 'clusters where found')
 print(silhouette_score(rolf.center, rolf.lables))
 '''
 ##### Vizualizing learned Network ###############################################
-
+'''
 fig, (ax1, ax2) = plt.subplots(1, 2)
 
 for c in range(0, len(rolf.center)):
@@ -213,4 +213,62 @@ plt.show()
 
 #plotting
 '''
+#Plotting PCA reduced Clusters
+'''
+rolf_PCA = PCA(n_components=2).fit_transform(rolf.center)
+plt.scatter(rolf_PCA.T[0], rolf_PCA.T[1], c=rolf.lables)
+plt.title('PCA reduced Clusters')
+plt.ylabel('PCA_comp1')
+plt.xlabel('PCA_comp0')
+plt.show()
+'''
+'''
+#decision tree on classification task
+clf = DecisionTreeClassifier(random_state=1234)
+model = clf.fit(rolf_PCA, rolf.lables)
+text_representation = tree.export_text(clf)
+print(text_representation)
 
+fig = plt.figure(figsize=(50,25))
+_ = tree.plot_tree(clf,
+                   feature_names=['PCA_comp0','PCA_comp1'],
+                   class_names=['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29'],
+                   filled=True)
+
+
+#clf DecisionTreeClassifier
+import graphviz
+# DOT data
+dot_data = tree.export_graphviz(clf, out_file=None,
+                                feature_names=['PCA_comp0','PCA_comp1'],
+                                filled=True)
+
+# Draw graph
+graph = graphviz.Source(dot_data, format="png")
+graph
+#nochmal für gesamten Featureraum
+'''
+'''
+def gentargetfile():
+    with open('rolf.pickle', 'rb') as handle:
+        ROLF = pickle.load(handle)
+    X = pd.read_csv('hammerhead_reduced.csv', delimiter=',')
+    X = X.fillna(0)
+    del X['epoch']
+    X = X.to_numpy()
+    results = []
+    for i in range(len(X)):
+        results.append(ROLF.predict(X[i]))
+    y = np.array(results)
+    return y
+
+
+clf = DecisionTreeClassifier(random_state=1234)
+model = clf.fit(X, gentargetfile())
+text_representation = tree.export_text(clf)
+print(text_representation)
+
+fig = plt.figure(figsize=(150,75),dpi = 200)
+_ = tree.plot_tree(clf,filled=True)
+fig.savefig("decistion_tree.png")
+'''
